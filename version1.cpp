@@ -28,13 +28,14 @@ int main() {
 			const int max_count = 4096;
 			wchar_t format_name[max_count];
 			int name_length = GetClipboardFormatName(next_format, format_name, max_count);
-			int format;
+			int format=(int) formats;
 			//flags to check the clipboard format.
 				bool UNICODETEXT = IsClipboardFormatAvailable(CF_UNICODETEXT);
 				bool Text= IsClipboardFormatAvailable(CF_TEXT);
 				bool TIFF = IsClipboardFormatAvailable(CF_TIFF);
-				/*if (!same) {
-				* 					std::cout << "==========================================================================================================================" << endl;
+				HANDLE in;
+				if (!same) {
+				 					std::cout << "==========================================================================================================================" << endl;
 									Recorder << "==========================================================================================================================" << endl;
 
 				switch (format) {
@@ -42,7 +43,7 @@ int main() {
 				case 1:
 					OpenClipboard(0);
 					//grab text from the clipboard
-					HANDLE in = GetClipboardData(CF_TEXT);
+					 in = GetClipboardData(CF_TEXT);
 					//using said text display it to the console and store into the Logbook
 					std::cout << (char*)in << endl;
 					Recorder << (char*)in << endl;
@@ -50,96 +51,86 @@ int main() {
 					break;
 				//CF_BITMAP
 				case 2:
-				break;
+
+					break;
 				//CF_MetafilePict
 				case 3:
-				break;
+					break;
 				//Cf_Sylk
 				case 4:
-				break;
+					break;
 				//CF_Dif
 				case 5:
-				break;
+					break;
 				//CF_TiFF
 				case 6:
-				break;
+					break;
 				//CF_OEMTEXT
 				case 7:
-				break;
+					break;
 				//CF_DIB
 				case 8:
-				break;
+					break;
 				//CF_Palette
 				case 9:
-				break;
+					break;
 				//CF_PenDATA
 				case 10:
-				break;
+					break;
 				//CF_RIFF
 				case 11:
-				break;
-				CF_WAVE
+					break;
+				//CF_WAVE
 				case 12:
-				break;
+					break;
 				//CF_UNICODETEXT
 				case 13:
-				break;
+					break;
 				//CF_EMHMETAFILE
 				case 14:
-				break;
+					break;
 				//CF_HDROP
 				case 15:
-				break;
+					break;
 				//CF_LOCALE
 				case 16:
-				break;
+					break;
 				//CF_DIBV5
 				case 17:
-				break;
+					break;
 				//CF_DSPTEXT
 				case 0x0081:
-				break;
+					break;
 				//CF_DSPBITMAP
 				case 0x0082:
-				break;
+					break;
 				//CF_DSPENHMETAFILE
 				case 0x008E:
-				break;
+					break;
 				//CF_DSPMETAFILEPICT
 				case 0x0083:
-				break;
+					break;
 				//CF_GDIOBJFIRST
 				case 0x0300:
-				break;
+					break;
 				//CF_GDIOBJLAST
 				case 0x03FF:
-				break;
+					break;
 				//CF_OWNERDISPLAY
 				case 0x0080:
-				break;
+					break;
 				//CF_PRIVATEFIRST
 				case 0x0200:
-				break;
+					break;
 				//CF_PRIVATELAST
 				case 0x02FF:
-				break;
+					break;
 				
 
 				default:
 					break;
 				}
-				}*/
-				if (UNICODETEXT && Text && !same) {//if the clipboard has the format we want and it change recently
-
-					OpenClipboard(0);
-					//grab text from the clipboard
-					HANDLE in = GetClipboardData(CF_TEXT);
-					//using said text display it to the console and store into the Logbook
-					std::cout << "==========================================================================================================================" << endl;
-					std::cout << (char*)in << endl;
-					Recorder << "==========================================================================================================================" << endl;
-					Recorder << (char*)in << endl;
-					CloseClipboard();
+				
 				}
 			}
 		
