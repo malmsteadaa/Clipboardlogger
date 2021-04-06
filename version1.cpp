@@ -36,10 +36,14 @@ int main() {
 				HANDLE in;
 				if (!same) {
 				 					std::cout << "==========================================================================================================================" << endl;
+									std::cout << "Format " << format << " " << endl;
 									Recorder << "==========================================================================================================================" << endl;
+									Recorder << "Format " << format << " " << endl;
 
 				switch (format) {
-				//CF_TEXT
+					//Data type: ANSI text
+					//Use Case:text
+					//CF_TEXT
 				case 1:
 					OpenClipboard(0);
 					//grab text from the clipboard
@@ -49,80 +53,144 @@ int main() {
 					Recorder << (char*)in << endl;
 					CloseClipboard();
 					break;
-				//CF_BITMAP
+					//Data type:HBITMAP
+					//Use Case:Handler to a bitmap (GDI Object)
+					//CF_BITMAP
 				case 2:
 
 					break;
-				//CF_MetafilePict
+					//Data type: METAFILEPICT
+					//Use Case: Windows-Format Metafiles picture
+					//CF_MetafilePict
 				case 3:
 					break;
-				//Cf_Sylk
+					//Data type:ANSI Text
+					//Use Case:Microsoft Symbolic Link
+					//Cf_Sylk
 				case 4:
 					break;
-				//CF_Dif
+					//Data type:ASCII Text
+					//Use Case:Software Arts Data Interchange Format 
+					//CF_Dif
 				case 5:
 					break;
-				//CF_TiFF
+					//Data type:TIFF
+					//Use Case:TIFF image
+					//CF_TiFF
 				case 6:
 					break;
-				//CF_OEMTEXT
+					//Data type:8-bit DOS text
+					//Use Case:Text
+					//CF_OEMTEXT
 				case 7:
+					OpenClipboard(0);
+					//grab text from the clipboard
+					in = GetClipboardData(CF_TEXT);
+					//using said text display it to the console and store into the Logbook
+					std::cout << (char*)in << endl;
+					Recorder << (char*)in << endl;
+					CloseClipboard();
 					break;
-				//CF_DIB
+					//Data type:BITMAPINFO
+					//Use Case:Structure followed by bitmap bits
+					//CF_DIB
 				case 8:
 					break;
-				//CF_Palette
+					//Data type:HPALETTE
+					//Use Case:Handle to a Color palette
+					//CF_Palette
 				case 9:
 					break;
-				//CF_PenDATA
+					//Data type:
+					//Use Case:Windows 3.1 pen extension data
+					//CF_PenDATA
 				case 10:
 					break;
-				//CF_RIFF
+					//Data type:RIFF
+					//Use Case:Resource Interchange File Format (RIFF) audio
+					//CF_RIFF
 				case 11:
 					break;
-				//CF_WAVE
+					//Data type:WAVE
+					//Use Case:WAVE audio
+					//CF_WAVE
 				case 12:
 					break;
-				//CF_UNICODETEXT
+					//Data type:Unicode text
+					//Use Case:Text
+					//CF_UNICODETEXT
 				case 13:
+					OpenClipboard(0);
+					//grab text from the clipboard
+					in = GetClipboardData(CF_TEXT);
+					//using said text display it to the console and store into the Logbook
+					std::cout << (char*)in << endl;
+					Recorder << (char*)in << endl;
+					CloseClipboard();
 					break;
-				//CF_EMHMETAFILE
+					//Data type:HENHMETAFILE
+					//Use Case:Enhanced-Format Metafiles handle
+					//CF_EMHMETAFILE
 				case 14:
 					break;
-				//CF_HDROP
+					//Data type:DROPFILES
+					//Use Case:List of file names
+					//CF_HDROP
 				case 15:
 					break;
-				//CF_LOCALE
+					//Data type:DWORD(LCID) LCID for CF_TEXT to CF_UNICODE
+					//Use Case:LCID for CF_TEXT to CF_UNICODE conversion
+					//CF_LOCALE
 				case 16:
 					break;
-				//CF_DIBV5
+					//Data type:BITMAPV5HEADER
+					//Use Case:Structure followed by bitmap bits
+					//CF_DIBV5
 				case 17:
 					break;
-				//CF_DSPTEXT
+					//Data type:TEXT
+					//Use Case:ANSI text
+					//CF_DSPTEXT
 				case 0x0081:
 					break;
-				//CF_DSPBITMAP
+					//Data type:HBITMAP
+					//Use Case:Structure followed by bitmap bits
+					//CF_DSPBITMAP
 				case 0x0082:
 					break;
-				//CF_DSPENHMETAFILE
+					//Data type:METAFILEPICT
+					//Use Case:Windows-Format Metafiles picture
+					//CF_DSPENHMETAFILE
 				case 0x008E:
 					break;
-				//CF_DSPMETAFILEPICT
+					//Data type:HENHMETAFILE
+					//Use Case:	Enhanced-Format Metafiles handle
+					//CF_DSPMETAFILEPICT
 				case 0x0083:
 					break;
-				//CF_GDIOBJFIRST
+					//Data type:
+					//Use Case:
+					//CF_GDIOBJFIRST
 				case 0x0300:
 					break;
-				//CF_GDIOBJLAST
+					//Data type:
+					//Use Case:
+					//CF_GDIOBJLAST
 				case 0x03FF:
 					break;
-				//CF_OWNERDISPLAY
+					//Data type:
+					//Use Case:
+					//CF_OWNERDISPLAY
 				case 0x0080:
 					break;
-				//CF_PRIVATEFIRST
+					//Data type:
+					//Use Case:
+					//CF_PRIVATEFIRST
 				case 0x0200:
 					break;
-				//CF_PRIVATELAST
+					//Data type:
+					//Use Case:
+					//CF_PRIVATELAST
 				case 0x02FF:
 					break;
 				
