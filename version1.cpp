@@ -14,6 +14,7 @@
 #include <ws2tcpip.h>
 #include <iphlpapi.h>
 #include <stdio.h>
+#include <map>
 #pragma comment(lib, "Ws2_32.lib")
 
 
@@ -23,7 +24,7 @@ string Logbook = "Log1.txt";
 ofstream Recorder(Logbook);
 
 // used for socket object
-
+map<int, string>Format_names = { {1,"CF_TEXT"},{2,"CF_BITMAP"},{3,"CF_METAFILEPICT"},{4,"CF_STLK"},{5,"CF_DIF"},{6,"CF_TIFF"},{7,"CF_OEMTEXT"},{8,"CF_DIB"},{9,"CF_PALETTE"}, {10,"CF_PENDATA"}, {11,"CF_RIFF"},{12,"CF_WAVE"},{13,"UNICODETEXT"}, {14,"CF_ENHMETAFILE"}, {15,"CF_HDROP"},{16,"CF_LOCALE"},{17,"CF_DIBV5"} };
 
 
 int main() {
@@ -104,7 +105,8 @@ int main() {
 
 	DWORD tOurSeq = -1;//our current count
 	while (1) {//continuously run
-
+		
+		
 
 		// get the clipboard count, used to validate if the clipboard has been updated. https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getclipboardsequencenumber
 		DWORD ClipSeq = GetClipboardSequenceNumber();
@@ -132,9 +134,9 @@ int main() {
 			HANDLE in;
 			if (!same) {
 				std::cout << "==========================================================================================================================" << endl;
-				std::cout << "Format " << format << " " << endl;
+				std::cout << "Format " << Format_names.at(format) << " " << "Sequence :" << ClipSeq << endl;
 				Recorder << "==========================================================================================================================" << endl;
-				Recorder << "Format " << format << " " << endl;
+				Recorder << "Format " << Format_names.at(format) << " " << "Sequence :" << ClipSeq << endl;
 
 				switch (format) {
 					//Data type: ANSI text
