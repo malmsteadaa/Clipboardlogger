@@ -1,4 +1,5 @@
 //These defines are needed to prevent winsock2 from calling window.h twice.
+#define _WIN32_WINNT 0x501
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -101,12 +102,12 @@ int main() {
 
 	//This is a format example on how to send data to the server. To be deleted for release.
 	char* sendbuf;
-	
+
 
 	DWORD tOurSeq = -1;//our current count
 	while (1) {//continuously run
-		
-		
+
+
 
 		// get the clipboard count, used to validate if the clipboard has been updated. https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getclipboardsequencenumber
 		DWORD ClipSeq = GetClipboardSequenceNumber();
@@ -124,13 +125,12 @@ int main() {
 			next_format = EnumClipboardFormats(next_format);
 			const int max_count = 4096;
 			wchar_t format_name[max_count];
-			int name_length = GetClipboardFormatName(next_format, format_name, max_count);
 			int format = (int)formats;
 			//flags to check the clipboard format.
 			bool UNICODETEXT = IsClipboardFormatAvailable(CF_UNICODETEXT);
 			bool Text = IsClipboardFormatAvailable(CF_TEXT);
 			bool TIFF = IsClipboardFormatAvailable(CF_TIFF);
-			
+
 			HANDLE in;
 			if (!same) {
 				std::cout << "==========================================================================================================================" << endl;
@@ -172,7 +172,7 @@ int main() {
 				case 4:
 					break;
 					//Data type:ASCII Text
-					//Use Case:Software Arts Data Interchange Format 
+					//Use Case:Software Arts Data Interchange Format
 					//CF_Dif
 				case 5:
 					break;
