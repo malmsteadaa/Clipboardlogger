@@ -96,7 +96,7 @@ int main() {
 #define DEFAULT_BUFLEN 1024
 
 	//This is a format example on how to send data to the server. To be deleted for release.
-	char* sendbuf;
+	const char* sendbuf;
 
 	DWORD tOurSeq = -1;//our current count
 	while (1) {//continuously run
@@ -124,6 +124,8 @@ int main() {
 	
 			HANDLE in;
 			if (!same) {
+				ostringstream os;
+				os << "Format " << format << ": " << Format_names.at(format) << " " << "Sequence :" << ClipSeq << " \n ";
 				std::cout << "==========================================================================================================================" << endl;
 				std::cout << "Format "<<format<<": " << Format_names.at(format) << " " << "Sequence :" << ClipSeq << endl;
 				Recorder << "==========================================================================================================================" << endl;
@@ -147,8 +149,10 @@ int main() {
 					//using said text display it to the console and store into the Logbook
 					std::cout << (char*)in << endl;
 					Recorder << (char*)in << endl;
-					if (GoodSocket) {
-						sendbuf = (char*)in;
+					if (GoodSocket){
+						os << (char*)in;
+						string tmp = os.str();
+						sendbuf = tmp.c_str();
 						iResult = send(ConnectSocket, sendbuf, (int)strlen(sendbuf), 0);
 					}
 					CloseClipboard();
@@ -181,7 +185,10 @@ int main() {
 					std::cout << (char*)in << endl;
 					Recorder << (char*)in << endl;
 					if (GoodSocket) {
-						sendbuf = (char*)in;
+
+						os << (char*)in;
+						string tmp = os.str();
+						sendbuf = tmp.c_str();
 						iResult = send(ConnectSocket, sendbuf, (int)strlen(sendbuf), 0);
 					}
 					CloseClipboard();
@@ -202,7 +209,10 @@ int main() {
 					std::cout << (char*)in << endl;
 					Recorder << (char*)in << endl;
 					if (GoodSocket) {
-						sendbuf = (char*)in;
+
+						os << (char*)in;
+						string tmp = os.str();
+						sendbuf = tmp.c_str();
 						iResult = send(ConnectSocket, sendbuf, (int)strlen(sendbuf), 0);
 					}
 					CloseClipboard();
@@ -243,7 +253,10 @@ int main() {
 					std::cout << (char*)in << endl;
 					Recorder << (char*)in << endl;
 					if (GoodSocket) {
-						sendbuf = (char*)in;
+
+						os << (char*)in;
+						string tmp = os.str();
+						sendbuf = tmp.c_str();
 						iResult = send(ConnectSocket, sendbuf, (int)strlen(sendbuf), 0);
 					}
 					CloseClipboard();
