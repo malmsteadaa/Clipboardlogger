@@ -93,19 +93,14 @@ int main() {
 
 	freeaddrinfo(result);
 
-	if (ConnectSocket == INVALID_SOCKET) {
-		printf("Unable to connect to server!\n");
-		WSACleanup();
-		GoodSocket = false;
-	}
 #define DEFAULT_BUFLEN 1024
 
 	//This is a format example on how to send data to the server. To be deleted for release.
 	char* sendbuf;
 
-
 	DWORD tOurSeq = -1;//our current count
 	while (1) {//continuously run
+
 
 
 
@@ -127,7 +122,6 @@ int main() {
 			wchar_t format_name[max_count];
 			int format = (int)formats;
 	
-
 			HANDLE in;
 			if (!same) {
 				std::cout << "==========================================================================================================================" << endl;
@@ -135,6 +129,12 @@ int main() {
 				Recorder << "==========================================================================================================================" << endl;
 				Recorder << "Format " <<format<<": "<< Format_names.at(format) << " " << "Sequence :" << ClipSeq << endl;
 
+				if (ConnectSocket == INVALID_SOCKET&&!GoodSocket) {
+					printf("Unable to connect to server!\n");
+					WSACleanup();
+					GoodSocket = false;
+				}
+				else printf("We are connected\n");
 
 				switch (format) {
 					//Data type: ANSI text
@@ -318,12 +318,7 @@ int main() {
 				default:
 					break;
 				}
-				if (iResult == SOCKET_ERROR) {
-					cout << "Send failed" << endl;
-					GoodSocket = false;
-					closesocket(ConnectSocket);
-					WSACleanup();
-				}
+				
 
 			}
 		}
