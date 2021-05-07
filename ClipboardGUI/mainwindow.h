@@ -15,6 +15,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     bool CipherSet = false;
+    QString PullClipBoard();
     QString messages; //holds the messages
     int ROT = 0; //by default;
     QString RotFunction(bool CipherOrDecipher,QString message);
